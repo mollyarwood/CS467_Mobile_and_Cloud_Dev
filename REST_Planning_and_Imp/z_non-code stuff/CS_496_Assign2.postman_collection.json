@@ -1,0 +1,2437 @@
+{
+	"info": {
+		"name": "CS_496_Assign2",
+		"_postman_id": "3874abfe-d62c-8fc7-a872-c1f63f023fdd",
+		"description": "boats and slips",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Increase boat count",
+			"description": "makes sure post works by checking boat count increases",
+			"item": [
+				{
+					"name": "Get count of boats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"pm.test(\"Number of boats listed in console\", function() {",
+									"    console.log(list);",
+									"    pm.environment.set(\"numberOfBoats\", list);",
+									"})"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "boat_post_check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objKey = jsonresponse[\"self\"];",
+									"    var key = objKey.split(\"/\")[2]",
+									"}",
+									"",
+									"//get boatId so we can run a get id check later",
+									"pm.environment.set(\"boatID\", key);",
+									"",
+									"//test to confirm environment var is set",
+									"id = pm.environment.get(\"boatID\");",
+									"if (id !== null){",
+									"    tests[\"environment var is set\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"environment var is set\"] = false;",
+									"}",
+									"",
+									"",
+									"//check status code ",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"boaty mcboatface\",\n\t\"boat_type\": \"sailboat\",\n\t\"length\": 28\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get count of boats copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"if (list > pm.environment.get(\"numberOfBoats\")) {",
+									"    tests[\"number of boats greater\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"number of boats greater\"] = false;",
+									"}",
+									"",
+									"",
+									"//update numberOfBoats env var for future tests",
+									"pm.environment.set(\"numberOfBoats\", list);",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "boat id check",
+			"description": "",
+			"item": [
+				{
+					"name": "boatID_get_check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objKey = jsonresponse[\"self\"];",
+									"    var key = objKey.split(\"/\")[2]",
+									"}",
+									"",
+									"",
+									"//testing for right boat being returned (and that there was a return at all)",
+									"if (pm.environment.get(\"boatID\") === key) {",
+									"    tests[\"correctBoatReturned\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"correctBoatReturned\"] = false;",
+									"}",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats/{{boatID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats",
+								"{{boatID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "list of boats",
+			"description": "",
+			"item": [
+				{
+					"name": "list out boats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"if (list > 1) {",
+									"    tests[\"more than one list item printed out\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"more than one list item printed out\"] = false;",
+									"}",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": "checking to confirm list of boats shown when visiting url"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "boat patch",
+			"description": "checking a property's value before the patch and after the patch to confirm they've changed",
+			"item": [
+				{
+					"name": "boat property env var assign",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat name",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objName = jsonresponse[\"name\"];",
+									"}",
+									"",
+									"//set the object as an env variable",
+									"pm.environment.set(\"boatName\", objName);",
+									"",
+									"//check to make sure env var was set",
+									"pm.environment.get(\"boatName\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats/{{boatID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats",
+								"{{boatID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				},
+				{
+					"name": "update value of a boat property",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : \"new name!\",\n\t\"boat_type\" : \"ski\"\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats/{{boatID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats",
+								"{{boatID}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "boat name property check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objKey = jsonresponse[\"name\"];",
+									"}",
+									"",
+									"",
+									"//testing for right boat being returned (and that there was a return at all)",
+									"if (pm.environment.get(\"boatName\") !== objKey) {",
+									"    tests[\"Boat name changed\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"Boat name changed\"] = false;",
+									"}",
+									"",
+									"//update env var for future tests",
+									"pm.environment.set(\"boatName\", objKey);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats/{{boatID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats",
+								"{{boatID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "boat put",
+			"description": "checking a property's value before the patch and after the patch to confirm they've changed",
+			"item": [
+				{
+					"name": "boat property env var assign",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat name",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objName = jsonresponse[\"name\"];",
+									"}",
+									"",
+									"//set the object as an env variable",
+									"pm.environment.set(\"boatName\", objName);",
+									"",
+									"//check to make sure env var was set",
+									"pm.environment.get(\"boatName\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats/{{boatID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats",
+								"{{boatID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				},
+				{
+					"name": "replace specific boat with new values",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : \"new name again!\",\n\t\"boat_type\" : \"ski\",\n\t\"length\" : 28,\n\t\"at_sea\" : true\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats/{{boatID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats",
+								"{{boatID}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "boat name property check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objKey = jsonresponse[\"name\"];",
+									"}",
+									"",
+									"",
+									"//testing for right boat being returned (and that there was a return at all)",
+									"if (pm.environment.get(\"boatName\") !== objKey) {",
+									"    tests[\"Boat name changed\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"Boat name changed\"] = false;",
+									"}",
+									"",
+									"//update env var for future tests",
+									"pm.environment.set(\"boatName\", objKey);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats/{{boatID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats",
+								"{{boatID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Increase slip count",
+			"description": "counting number of slips before and after post to ensure that post worked",
+			"item": [
+				{
+					"name": "Get count of slips",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"pm.test(\"Number of slips listed in console\", function() {",
+									"    console.log(list);",
+									"    pm.environment.set(\"numberOfSlips\", list);",
+									"})"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "slip_post_check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objKey = jsonresponse[\"self\"];",
+									"    var key = objKey.split(\"/\")[2]",
+									"}",
+									"",
+									"//get sliptId so we can run a get id check later",
+									"pm.environment.set(\"slipID\", key);",
+									"",
+									"//test to confirm environment var is set",
+									"id = pm.environment.get(\"slipID\");",
+									"if (id !== null){",
+									"    tests[\"environment var is set\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"environment var is set\"] = false;",
+									"}",
+									"",
+									"",
+									"//check status code",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"number\": \"abc231\"\n\t\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get count of slips copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"if (list > pm.environment.get(\"numberOfSlips\")) {",
+									"    tests[\"number of slips greater\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"number of slips greater\"] = false;",
+									"}",
+									"",
+									"",
+									"//update numberOfBoats env var for future tests",
+									"pm.environment.set(\"numberOfSlips\", list);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "slip id check",
+			"description": "",
+			"item": [
+				{
+					"name": "slipID_get_check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objVal = jsonresponse[\"self\"];",
+									"    var key = objVal.split(\"/\")[2]",
+									"}",
+									"",
+									"//testing for right boat being returned (and that there was a return at all)",
+									"if (pm.environment.get(\"slipID\") === key) {",
+									"    tests[\"correctSlipReturned\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"correctSlipReturned\"] = false;",
+									"}",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "list of slips",
+			"description": "",
+			"item": [
+				{
+					"name": "list out slips",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"if (list > 1) {",
+									"    tests[\"more than one list item printed out\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"more than one list item printed out\"] = false;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips"
+							]
+						},
+						"description": "checking to confirm list of boats shown when visiting url"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "slip patch",
+			"description": "checking property value before and after patch to confirm it's been updated",
+			"item": [
+				{
+					"name": "slip property env var assign",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objName = jsonresponse[\"number\"];",
+									"}",
+									"",
+									"//set the object as an env variable",
+									"pm.environment.set(\"slipNumber\", objName);",
+									"",
+									"//check to make sure env var was set",
+									"pm.environment.get(\"slipNumber\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				},
+				{
+					"name": "update value of a slip property",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"number\" : \"1b2m35\"\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "slip property change check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objKey = jsonresponse[\"number\"];",
+									"}",
+									"",
+									"",
+									"//testing for right boat being returned (and that there was a return at all)",
+									"if (pm.environment.get(\"slipNumber\") !== objKey) {",
+									"    tests[\"Slip number changed\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"Slip number changed\"] = false;",
+									"}",
+									"",
+									"//update env var for future tests",
+									"pm.environment.set(\"slipNumber\", objKey);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "slip put",
+			"description": "checking property value before and after patch to confirm it's been updated",
+			"item": [
+				{
+					"name": "slip property env var assign",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objName = jsonresponse[\"number\"];",
+									"}",
+									"",
+									"//set the object as an env variable",
+									"pm.environment.set(\"slipNumber\", objName);",
+									"",
+									"//check to make sure env var was set",
+									"pm.environment.get(\"slipNumber\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				},
+				{
+					"name": "update value of a slip property",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"number\" : \"1b2m31\",\n\t\"arrival_date\" : \"1/6/17\",\n\t\"current_boat\" : \"\"\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "slip property change check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objKey = jsonresponse[\"number\"];",
+									"}",
+									"",
+									"",
+									"//testing for right boat being returned (and that there was a return at all)",
+									"if (pm.environment.get(\"slipNumber\") !== objKey) {",
+									"    tests[\"Slip number changed\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"Slip number changed\"] = false;",
+									"}",
+									"",
+									"//update env var for future tests",
+									"pm.environment.set(\"slipNumber\", objKey);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "currBoat error handler check",
+			"description": "getting the value of \"current_boat\" from slip and then making sure correct response sent when visiting \"/slip/{slipID}/boat\"",
+			"item": [
+				{
+					"name": "slip property env var assign",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objName = jsonresponse[\"current_boat\"];",
+									"}",
+									"",
+									"//set the object as an env variable",
+									"pm.environment.set(\"currBoat\", objName);",
+									"",
+									"//check to make sure env var was set",
+									"pm.environment.get(\"currBoat\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				},
+				{
+					"name": "get boat in specific slip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//get slip's current_boat data from env variable",
+									"var sId = pm.environment.get(\"currBoat\");",
+									"",
+									"if (sId === \"\") {",
+									"    if (responseBody === \"No boat in slip\\n\") {",
+									"        tests[\"No boat detected correctly\"] = true;",
+									"    }",
+									"    else {",
+									"        tests[\"No boat detected correctly\"] = false;",
+									"    }",
+									"}",
+									"else {",
+									"",
+									"    pm.test(\"Boat data returned\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData.boatId).to.eql(sId);",
+									"    });",
+									"    ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}/boat",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}",
+								"boat"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "put boat in specific slip",
+			"description": "checking to confirm boat has been placed in slip",
+			"item": [
+				{
+					"name": "put boat into specific slip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var currentB = '/boats/' + pm.environment.get(\"currBoat\");",
+									"",
+									"pm.test(\"current_boat filled\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.current_boat).to.eql(currentB);",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var bID = pm.environment.get(\"boatID\");",
+									"pm.environment.set(\"currBoat\", bID);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"boat\" : \"{{boatID}}\",\n\t\"arrival_date\" : \"3-3-13\"\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}/boat",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}",
+								"boat"
+							]
+						},
+						"description": "sending boat's id in body of request. boat's \"at_sea\" will be updated and slip's \"current_boat\" will be updated."
+					},
+					"response": []
+				},
+				{
+					"name": "get boat in specific slip copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//get slip's current_boat data from env variable",
+									"var sId = pm.environment.get(\"currBoat\");",
+									"",
+									"if (sId === \"\") {",
+									"    if (responseBody === \"No boat in slip\\n\") {",
+									"        tests[\"No boat detected correctly\"] = true;",
+									"    }",
+									"    else {",
+									"        tests[\"No boat detected correctly\"] = false;",
+									"    }",
+									"}",
+									"else {",
+									"",
+									"    pm.test(\"Boat data returned\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData.boatId).to.eql(sId);",
+									"    });",
+									"    ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}/boat",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}",
+								"boat"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "put boat in specific slip to check for error handlng",
+			"description": "checking to confirm boat has been placed in slip",
+			"item": [
+				{
+					"name": "put boat into specific slip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var bID = pm.environment.get(\"boatID\");",
+									"pm.environment.set(\"currBoat\", bID);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"boat\" : \"{{boatID}}\",\n\t\"arrival_date\" : \"3-3-13\"\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}/boat",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}",
+								"boat"
+							]
+						},
+						"description": "sending boat's id in body of request. boat's \"at_sea\" will be updated and slip's \"current_boat\" will be updated."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "get boat in specific slip",
+			"description": "getting the value of \"current_boat\" from slip and then making sure correct response sent when visiting \"/slip/{slipID}/boat\"",
+			"item": [
+				{
+					"name": "slip property env var assign",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objName = jsonresponse[\"current_boat\"];",
+									"}",
+									"",
+									"//set the object as an env variable",
+									"pm.environment.set(\"currBoat\", objName);",
+									"",
+									"//check to make sure env var was set",
+									"pm.environment.get(\"currBoat\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				},
+				{
+					"name": "get boat in specific slip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//get slip's current_boat data from env variable",
+									"var sId = pm.environment.get(\"currBoat\");",
+									"",
+									"if (sId === \"\") {",
+									"    if (responseBody === \"No boat in slip\\n\") {",
+									"        tests[\"No boat detected correctly\"] = true;",
+									"    }",
+									"    else {",
+									"        tests[\"No boat detected correctly\"] = false;",
+									"    }",
+									"}",
+									"else {",
+									"",
+									"    pm.test(\"Boat data returned\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData.boatId).to.eql(sId);",
+									"    });",
+									"    ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}/boat",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}",
+								"boat"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Remove boat from slip",
+			"description": "setting boat at_sea to true. changing slip's current_boat to \"\"",
+			"item": [
+				{
+					"name": "slip currentBoat not empty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objName = jsonresponse[\"current_boat\"];",
+									"}",
+									"",
+									"//check current_boat is now empty",
+									"if (objName === \"\") {",
+									"    tests[\"slip has boat in it\"] = false;",
+									"}",
+									"else {",
+									"    tests[\"slip has boat in it\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				},
+				{
+					"name": "remove boat from slip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}/boat",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}",
+								"boat"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "slip currentBoat empty check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objName = jsonresponse[\"current_boat\"];",
+									"}",
+									"",
+									"//check current_boat is now empty",
+									"if (objName === \"\") {",
+									"    tests[\"Deleted current_boat\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"Deleted current_boat\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": "check to see if you can request a specific boat based on id"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "put boat in specific slip copy",
+			"description": "checking to confirm boat has been placed in slip",
+			"item": [
+				{
+					"name": "put boat into specific slip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var currentB = '/boats/' + pm.environment.get(\"currBoat\");",
+									"",
+									"pm.test(\"current_boat filled\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.current_boat).to.eql(currentB);",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var bID = pm.environment.get(\"boatID\");",
+									"pm.environment.set(\"currBoat\", bID);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"boat\" : \"{{boatID}}\",\n\t\"arrival_date\" : \"4-4-14\"\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}/boat",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}",
+								"boat"
+							]
+						},
+						"description": "sending boat's id in body of request. boat's \"at_sea\" will be updated and slip's \"current_boat\" will be updated."
+					},
+					"response": []
+				},
+				{
+					"name": "get boat in specific slip copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//get slip's current_boat data from env variable",
+									"var sId = pm.environment.get(\"currBoat\");",
+									"",
+									"if (sId === \"\") {",
+									"    if (responseBody === \"No boat in slip\\n\") {",
+									"        tests[\"No boat detected correctly\"] = true;",
+									"    }",
+									"    else {",
+									"        tests[\"No boat detected correctly\"] = false;",
+									"    }",
+									"}",
+									"else {",
+									"",
+									"    pm.test(\"Boat data returned\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData.boatId).to.eql(sId);",
+									"    });",
+									"    ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}/boat",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}",
+								"boat"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "deleting boat",
+			"description": "deleting a boat, then checking to make sure specific id is gone",
+			"item": [
+				{
+					"name": "Get count of boats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"console.log(list);",
+									"pm.environment.set(\"numberOfBoats\", list);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "delete specific boat",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats/{{boatID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats",
+								"{{boatID}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get count of boats copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"var numBoats = pm.environment.get(\"numberOfBoats\");",
+									"console.log(list);",
+									"",
+									"if (list < numBoats) {",
+									"    tests[\"number of boats less after delete\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"number of boats less after delete\"] = false;",
+									"}",
+									"",
+									"",
+									"//set env var for upcoming tests",
+									"pm.environment.set(\"numberOfBoats\", list);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "deleted boat removed from slip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objVal = jsonresponse[\"current_boat\"];",
+									"}",
+									"",
+									"//testing for right boat being returned (and that there was a return at all)",
+									"if (objVal === \"\") {",
+									"    tests[\"boat removed from slip\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"boat removed from slip\"] = false;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Increase boat count copy",
+			"description": "makes sure post works by checking boat count increases",
+			"item": [
+				{
+					"name": "Get count of boats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"pm.test(\"Number of boats listed in console\", function() {",
+									"    console.log(list);",
+									"    pm.environment.set(\"numberOfBoats\", list);",
+									"})"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "boat_post_check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//confirm there is a response and extract boat key",
+									"if (typeof Object.keys(JSON.parse(responseBody)) !== null && Object.keys(JSON.parse(responseBody)).length > 0) {",
+									"    var jsonresponse = JSON.parse(responseBody);",
+									"    var objKey = jsonresponse[\"self\"];",
+									"    var key = objKey.split(\"/\")[2]",
+									"}",
+									"",
+									"//get boatId so we can run a get id check later",
+									"pm.environment.set(\"boatID\", key);",
+									"",
+									"//test to confirm environment var is set",
+									"id = pm.environment.get(\"boatID\");",
+									"if (id !== null){",
+									"    tests[\"environment var is set\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"environment var is set\"] = false;",
+									"}",
+									"",
+									"",
+									"//check status code ",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"boaty mcboatface\",\n\t\"boat_type\": \"sailboat\",\n\t\"length\": 28\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get count of boats copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"if (list > pm.environment.get(\"numberOfBoats\")) {",
+									"    tests[\"number of boats greater\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"number of boats greater\"] = false;",
+									"}",
+									"",
+									"",
+									"//update numberOfBoats env var for future tests",
+									"pm.environment.set(\"numberOfBoats\", list);",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "put boat in slip with PUT",
+			"description": "checking to confirm boat has been placed in slip",
+			"item": [
+				{
+					"name": "put boat into specific slip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var bID = pm.environment.get(\"boatID\");",
+									"pm.environment.set(\"currBoat\", bID);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\" : \"new name holla!\",\n\t\"boat_type\" : \"wakeboard\",\n\t\"length\" : 28,\n\t\"at_sea\" : false\n}"
+						},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats/{{boatID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats",
+								"{{boatID}}"
+							]
+						},
+						"description": "sending boat's id in body of request. boat's \"at_sea\" will be updated and slip's \"current_boat\" will be updated."
+					},
+					"response": []
+				},
+				{
+					"name": "get boat in specific slip copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"//get slip's current_boat data from env variable",
+									"var sId = pm.environment.get(\"currBoat\");",
+									"var flag = false;",
+									"",
+									"for (var i = 0; i < list; i++) {",
+									"    if (body[i].current_boat == sId) {",
+									"        flag = true;",
+									"    }",
+									"}",
+									"",
+									"tests[\"slip contains the boat\"] = flag;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "deleting slip",
+			"description": "deleting a boat, then checking to make sure specific id is gone",
+			"item": [
+				{
+					"name": "Get count of slips",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"console.log(list);",
+									"pm.environment.set(\"numberOfSlips\", list);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "delete specific slip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips/{{slipID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips",
+								"{{slipID}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get count of slips copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"var numSlips = pm.environment.get('numberOfSlips');",
+									"",
+									"",
+									"if (list < numSlips) {",
+									"    tests[\"number of slips less after delete\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"number of slips less after delete\"] = false;",
+									"}",
+									"",
+									"",
+									"//set env var for upcoming tests",
+									"pm.environment.set(\"numberOfSlips\", list);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/slips",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"slips"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "deleting boat copy",
+			"description": "deleting a boat, then checking to make sure specific id is gone",
+			"item": [
+				{
+					"name": "Get count of boats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"console.log(list);",
+									"pm.environment.set(\"numberOfBoats\", list);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "delete specific boat",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats/{{boatID}}",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats",
+								"{{boatID}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get count of boats copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"var numBoats = pm.environment.get(\"numberOfBoats\");",
+									"console.log(list);",
+									"",
+									"if (list < numBoats) {",
+									"    tests[\"number of boats less after delete\"] = true;",
+									"}",
+									"else {",
+									"    tests[\"number of boats less after delete\"] = false;",
+									"}",
+									"",
+									"",
+									"//set env var for upcoming tests",
+									"pm.environment.set(\"numberOfBoats\", list);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://restimplementation-182602.appspot.com/boats",
+							"protocol": "https",
+							"host": [
+								"restimplementation-182602",
+								"appspot",
+								"com"
+							],
+							"path": [
+								"boats"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
