@@ -1,0 +1,442 @@
+{
+	"variables": [],
+	"info": {
+		"name": "CS_496_GitHub_REST_API_Assignment",
+		"_postman_id": "9f995a89-daed-dd9c-2408-dbc7ba03e0f6",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Increase Gist Count",
+			"description": "GET to get original number of user's gists\nPOST to add new gist to user's account\nGET to check new number of user's gists",
+			"item": [
+				{
+					"name": "Get count of gists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"pm.test(\"Number of gists listed in console\", function() {",
+									"    console.log(list);",
+									"    pm.environment.set(\"numberOfGists\", list);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://api.github.com/gists",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer d93a55ad56c43a2960de1d8252faf259e620803b",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "checks to see if the number of gists in repository is incremented by 1 when creating new gist"
+					},
+					"response": []
+				},
+				{
+					"name": "Increase Gist count by 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://api.github.com/gists",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer d93a55ad56c43a2960de1d8252faf259e620803b",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"description\": \"{{desc}}\",\n\t\"public\": true,\n\t\"files\": {\n\t\t\"{{fileName}}\": {\n\t\t\t\"content\": \"increase count check!\"\n\t\t}\n\t}\n}"
+						},
+						"description": "checks to see if the number of gists in repository is incremented by 1 when creating new gist"
+					},
+					"response": []
+				},
+				{
+					"name": "Get count of gists copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var body = JSON.parse(responseBody);",
+									"var list = body.length;",
+									"",
+									"",
+									"pm.test(\"Number of gists listed in console\", function() {",
+									"    console.log(list);",
+									"    pm.environment.set(\"numberOfGists\", list);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://api.github.com/gists",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer d93a55ad56c43a2960de1d8252faf259e620803b",
+								"description": ""
+							}
+						],
+						"body": {},
+						"description": "checks to see if the number of gists in repository is incremented by 1 when creating new gist"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "return 30 gists",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var body = JSON.parse(responseBody);",
+							"var list = body.length;",
+							"",
+							"",
+							"pm.test(\"Count is 30 Gists\", function() {",
+							"    pm.expect(list).to.eql(30);",
+							"})",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.github.com/gists",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "checks to see if the number of responses returned is equal to 30."
+			},
+			"response": []
+		},
+		{
+			"name": "user wolforj has gist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							"//Test for wolfordj user name",
+							"var userToCheck = 'wolfordj'",
+							"var flag = false;",
+							"var jsonData = pm.response.json();",
+							"",
+							"for (var i = 0; i < jsonData.length; i++) {",
+							"    if (jsonData[i].owner != null) {",
+							"        if (jsonData[i].owner.login == userToCheck) {",
+							"            console.log(jsonData[i].owner.login);",
+							"            tests[\"wolfordj has at least one gist\"] = true;",
+							"            flag = true;",
+							"        }",
+							"    }",
+							"}",
+							"",
+							"if (!flag) {",
+							"    tests[\"wolfordj has at least one gist\"] = false;",
+							"}"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.github.com/users/wolfordj/gists",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "checks to see if user 'wolfordj' has at least one public gist"
+			},
+			"response": []
+		},
+		{
+			"name": "gist contents match created",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var responseJSON = pm.response.json();",
+							"var first_file = responseJSON.files[Object.keys(responseJSON.files)[0]];",
+							"",
+							"//set environment variable of gist id for star/delete test purposes",
+							"pm.environment.set(\"gistID\", responseJSON.id);",
+							"",
+							"",
+							"//check response against the environment variables set",
+							"tests['file name response matches the file name posted'] = (first_file.filename === pm.environment.get(\"fileName\"));",
+							"",
+							"tests['file content response matches the file content posted'] = (first_file.content === pm.environment.get(\"content\"));",
+							"",
+							"tests['gist description response matches the gist description posted'] = (responseJSON.description === pm.environment.get(\"desc\"));",
+							"",
+							"postman.setNextRequest(\"edit gist\");"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//setting content of file",
+							"pm.environment.set(\"fileName\", \"testFile.txt\");",
+							"pm.environment.set(\"desc\", \"gist created from api via postman\");",
+							"pm.environment.set(\"content\", \"Hello World!\");",
+							"",
+							"",
+							"",
+							"",
+							"pm.environment.get(\"fileName\");",
+							"",
+							"pm.environment.get(\"desc\");",
+							"",
+							"pm.environment.get(\"content\");"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.github.com/gists",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer d93a55ad56c43a2960de1d8252faf259e620803b",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"description\": \"{{desc}}\",\n\t\"public\": true,\n\t\"files\": {\n\t\t\"{{fileName}}\": {\n\t\t\t\"content\": \"{{content}}\"\n\t\t}\n\t}\n}"
+				},
+				"description": "checks to see if the contents added to the gist are as expected. (they match the ones sent)"
+			},
+			"response": []
+		},
+		{
+			"name": "edit gist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"responseJSON = pm.response.json();",
+							"var first_file = responseJSON.files[Object.keys(responseJSON.files)[0]];",
+							"",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"//check response against the environment variables set",
+							"tests['file edit shows up in response'] = (first_file.content === pm.environment.get(\"edited_contents\"));"
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"edited_contents\", \"hello world - edited!\");"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.github.com/gists/{{gistID}}",
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer d93a55ad56c43a2960de1d8252faf259e620803b",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"description\": \"Permanent test hello world gist\",\n\t\"files\": {\n\t\t\"testFile.txt\": {\n\t\t\t\"content\": \"{{edited_contents}}\"\n\t\t}\n\t}\n}"
+				},
+				"description": "confirm you are able to edit gists"
+			},
+			"response": []
+		},
+		{
+			"name": "star gist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.github.com/gists/{{gistID}}/star",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer d93a55ad56c43a2960de1d8252faf259e620803b",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "stars a gist"
+			},
+			"response": []
+		},
+		{
+			"name": "list starred gists",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.github.com/gists/starred",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer d93a55ad56c43a2960de1d8252faf259e620803b",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "stars a gist"
+			},
+			"response": []
+		},
+		{
+			"name": "remove gist star",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.github.com/gists/{{gistID}}/star",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer d93a55ad56c43a2960de1d8252faf259e620803b",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "stars a gist"
+			},
+			"response": []
+		},
+		{
+			"name": "delete gist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "https://api.github.com/gists/{{gistID}}",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer d93a55ad56c43a2960de1d8252faf259e620803b",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "confirm you can delete a gist"
+			},
+			"response": []
+		}
+	]
+}
