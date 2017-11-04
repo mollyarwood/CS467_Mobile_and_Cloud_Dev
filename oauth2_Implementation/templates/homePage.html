@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
+    <title>Login</title>
+  </head>
+  <body>
+    <h2 id="header">Google Plus API Responses</h2>
+    <p> The name and URL displayed below were obtained from Google Plus's
+        API, given permission by you through OAuth2.0
+    </p>
+    <p> The state variable was used to confirm browser identity 
+    </p>
+    <br>
+    <div id="NameDiv">Name:</div>
+      {{firstName}}
+      <br>
+      {{lastName}}
+    <br>
+    <br>
+    <div id="URLDiv">User's URL:</div>
+      {{url}}
+    <br>
+    <br>
+    <div id="stateDiv">State Variable:</div>
+      {{state}}
+  </body>
+</html>
+{% endautoescape %}

@@ -1,0 +1,32 @@
+/*********************************************
+ *Author: Molly Arwood
+ *Date: 10-19-17
+ *style.css
+ *********************************************/
+
+
+ body {
+ 	font-family: 'Roboto', sans-serif;
+ 	font-size: 1.75rem;
+ }
+
+#header {
+	color: green;
+}
+
+ #NameDiv {
+ 	color: black;
+ 	font-size: 3rem;
+ }
+
+
+ #URLDiv {
+ 	color: black;
+ 	font-size: 3rem;
+ }
+
+
+  #stateDiv {
+ 	color: black;
+ 	font-size: 3rem;
+ }
